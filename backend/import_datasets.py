@@ -223,9 +223,11 @@ def import_maritime(file_path):
 
 
 if __name__ == "__main__":
-    aviation = r'c:\Users\yashv_p8oa5q\Desktop\chainguard\Global_Aviation_Route_Database.xlsx'
-    road = r'c:\Users\yashv_p8oa5q\Desktop\chainguard\India_Road_Network_Database.xlsx'
-    maritime = r'c:\Users\yashv_p8oa5q\Desktop\chainguard\Maritime_vessel_database.xlsx'
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    data_dir = os.path.join(base_dir, 'data')
+    aviation = os.path.join(data_dir, 'Global_Aviation_Route_Database.xlsx')
+    road = os.path.join(data_dir, 'India_Road_Network_Database.xlsx')
+    maritime = os.path.join(data_dir, 'Maritime_vessel_database.xlsx')
     import_aviation(aviation)
     import_roads(road)
     import_maritime(maritime)
