@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from database import engine, Base
-from routers import shipments, risk
+from routers import shipments, risk, aviation, roads, maritime
 
 app = FastAPI(
     title="ChainGuard API",
@@ -28,6 +28,9 @@ def startup_event():
 
 app.include_router(shipments.router, prefix="/api/v1")
 app.include_router(risk.router, prefix="/api/v1")
+app.include_router(aviation.router, prefix="/api/v1")
+app.include_router(roads.router, prefix="/api/v1")
+app.include_router(maritime.router, prefix="/api/v1")
 
 
 @app.get("/", tags=["health"])
