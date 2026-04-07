@@ -1,25 +1,85 @@
-import { MapContainer, TileLayer, CircleMarker } from 'react-leaflet'
+import { Fragment } from 'react'
+import { CircleMarker, MapContainer, Polyline, Popup, TileLayer, Tooltip } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
-import { mockShipments } from '../data/mockShipments'
 
 function getRiskColor(score) {
-    if (score >= 80) return '#E24B4A'   // red
-    if (score >= 40) return '#EF9F27'   // amber
-    return '#1D9E75'                    // green
+  if (score >= 80) return '#dc5f4b'
+  if (score >= 40) return '#f2a93b'
+  return '#36a46f'
 }
 
-export default function MapView() {
-    return (
-        <MapContainer center={[20, 0]} zoom={2} style={{ height: '100vh', width: '100%' }}>
-            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-            {mockShipments.map(ship => (
-                <CircleMarker
-                    key={ship.id}
-                    center={ship.origin}
-                    radius={8}
-                    pathOptions={{ color: getRiskColor(ship.risk), fillColor: getRiskColor(ship.risk), fillOpacity: 0.85 }}
-                />
-            ))}
-        </MapContainer>
-    )
+export default function MapView({ shipments }) {
+  return (
+    <MapContainer
+      center={[22, 8]}
+      zoom={2}
+      minZoom={2}
+      scrollWheelZoom={false}
+      className="map-canvas"
+      worldCopyJump
+    >
+      <TileLayer
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+      />
+
+      {shipments.map((shipment) => {
+        const color = getRiskColor(shipment.risk)
+
+        return (
+          <Fragment key={shipment.id}>
+            <Polyline
+              positions={[shipment.origin, shipment.destination]}
+              pathOptions={{
+                color,
+                weight: 3,
+                opacity: 0.85,
+                dashArray: shipment.risk >= 80 ? '8 10' : undefined,
+              }}
+            >
+              <Tooltip sticky>{shipment.id}</Tooltip>
+            </Polyline>
+
+            <CircleMarker
+              center={shipment.origin}
+              radius={7}
+              pathOptions={{
+                color: '#f6f1e8',
+                weight: 2,
+                fillColor: color,
+                fillOpacity: 1,
+              }}
+            >
+              <Popup>
+                <strong>{shipment.id}</strong>
+                <br />
+                Origin: {shipment.originLabel}
+                <br />
+                Cargo: {shipment.cargo}
+              </Popup>
+            </CircleMarker>
+
+            <CircleMarker
+              center={shipment.destination}
+              radius={5}
+              pathOptions={{
+                color,
+                weight: 2,
+                fillColor: '#102033',
+                fillOpacity: 1,
+              }}
+            >
+              <Popup>
+                <strong>{shipment.id}</strong>
+                <br />
+                Destination: {shipment.destinationLabel}
+                <br />
+                ETA: {shipment.eta}
+              </Popup>
+            </CircleMarker>
+          </Fragment>
+        )
+      })}
+    </MapContainer>
+  )
 }
